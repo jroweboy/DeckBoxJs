@@ -80,13 +80,27 @@ define(["dojo/_base/declare"], function(declare){
         },
 
         insertAfterIndex: function(card, index){
-            var pointer = (size/2 > index) ? this._top : this._bot;
+            // since this is a dual linked list there is a 
+            // potential optimaztion here where you can start from the 
+            // bottom if the index is greater than size/2. But I'm still
+            // not sure I want a dual linked list so I'm not using that
+            // var pointer = (size/2 > index) ? this._top : this._bot;
+            var pointer = this._top;
             if (pointer == null){
                 return insertTop(card);
             }
             var i = 0;
             while (pointer != null){
-                i++;
+                if (i == index){
+                    pointer.insertFront(card);
+                    pointer.insertBack(card._back);
+                    card.insertBack(pointer);
+                    size++;
+                    return i;
+                } else {
+                    pointer = (size/2 > index) ? pointer._back;
+                    i++;
+                }
             }
             return -1;
         },
